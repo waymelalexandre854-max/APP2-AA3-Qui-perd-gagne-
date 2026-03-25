@@ -1,13 +1,19 @@
 # APP2-AA3-Qui-perd-gagne-
 
 
+Verify the comphrension of the problem / Set the structural challenges:
 
-Vérifier compréhension du problème
-• Installer les enjeux structurels
+**Why the the 0 price is not a dominant strategy with the risque bonus ?**
 
-Pourquoi le prix 0 n’est-il pas une stratégie dominante avec la prime de risque ?
-• Le système est-il à somme nulle ? Justifiez.
-• Quelles informations sont nécessaires pour déterminer le gagnant ?
+With a relatively high value of the intensity of the risk premium alpha(α) ,rushing directly toward zero is not a predomiant strategy:
+bid_cost(price) = base_cost + α/(price+1)
+
+**Is the system a null sum system ? Justify** 
+
+**What kind of informations are necessary to determine the winner?** 
+
+The informations necessary to determine the winner is too reach the lowest score/price
+
 • Peut-on déterminer le gagnant sans trier les prix ?
 
 • Existe-t-il des structures qui permettent de maintenir les prix ordonnés
