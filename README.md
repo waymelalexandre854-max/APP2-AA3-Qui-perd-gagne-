@@ -8,41 +8,50 @@ Verify the comphrension of the problem / Set the structural challenges:
 With a relatively high value of the intensity of the risk premium alpha(α) ,rushing directly toward zero is not a predomiant strategy:
 bid_cost(price) = base_cost + α/(price+1)
 
-**Is the system a null sum system ? Justify** 
+**Is the system a null sum system ?**
 
 **What kind of informations are necessary to determine the winner?** 
 
 The informations necessary to determine the winner is too reach the lowest score/price
 
-• Peut-on déterminer le gagnant sans trier les prix ?
+**Can we determine the winner without filtering the prices ?**
 
-• Existe-t-il des structures qui permettent de maintenir les prix ordonnés
-dynamiquement ?
-• Quelle différence entre trier à la fin et maintenir l’ordre en permanence ?
-• Si les mises arrivent en flux continu, quelle solution est la plus adaptée ?
+**Is there structures that allows to maintain the ordonnated prices dynamically ?**
 
-Quelle est la complexité d’une insertion dans :
-o Un tableau trié ?
-o Un ABR équilibré ?
-o Un dictionnaire + tri à la fin ?
-• Dans quel cas un ABR peut-il devenir inefficace ?
-• Comment éviter la dégénérescence ?
+**What difference is there between sorting at the end or maintain a permanent order ?**
 
-Dans votre modèle, si tous les joueurs jouent aléatoirement, que se passe-t-il ?
-• Si tous jouent 0 ?
-• Existe-t-il un prix “stable” vers lequel le système converge ?
 
-Un script Python fonctionnel respectant les exigences ci-dessus.
-• Contraintes techniques
-o Implémenter un Arbre Binaire de Recherche (ABR).
-o Gérer plusieurs joueurs pour une même clé.
-o Permettre :
-i. Insertion, parcours infixe, recherche du plus bas unique,
-suppression conditionnelle, Simuler plusieurs manches.
-o Produire une analyse argumentée.
-o Interdictions :
-i. Pas de tri Python pour résoudre le problème principal.
-• Un rapport synthétique expliquant :
-o La structure du projet.
-o Les choix techniques : structure de donnée, algorithmes utilisés, …
-o Les difficultés rencontrées et leur résolution.
+• If updates arrive in a continuous stream, which solution is the most suitable?
+
+
+**What is the complexity of an insertion in:**
+– A sorted array?
+– A balanced binary search tree (BST)?
+– A dictionary + sorting at the end
+
+**In what cases can a BST become inefficient?**
+
+**How can we prevent degeneration?**
+
+**In your model, if all players play randomly, what happens?**
+
+**If everyone plays 0?**
+
+**Does a “stable” price exist toward which the system converges?**
+
+
+**A functional Python script that meets the above requirements:**
+
+**Technical constraints:**
+– Implement a Binary Search Tree (BST).
+– Handle multiple players for the same key.
+– Allow:
+i. Insertion, in-order traversal, finding the lowest unique value, conditional deletion, simulating multiple rounds.
+– Provide a reasoned analysis.
+– Prohibitions:
+i. No use of Python’s built-in sort to solve the main problem.
+• A concise report explaining:
+– The project structure.
+– Technical choices: data structures, algorithms used, etc.
+– Challenges faced and their resolutions.
+
