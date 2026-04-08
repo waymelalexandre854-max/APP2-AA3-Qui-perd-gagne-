@@ -2,11 +2,11 @@
 
 
 
-**Our project** 
+**Project Lowbid** 
 
-We are currently launching our startup which wants to disrupt LowBid online auctions . 
+We are currently launching our startup which wants to disrupt online auctions . 
 In order to do so, we want to make a platform that turns the sell of a premium item into a viral event. 
-Our project is quite simple in theorry , it is called **"Lowest Unique Bid Wins"**
+Our project is quite simple in theory , it is called **"Lowest Unique Bid Wins"**
 
 **Description of the programm**
 
@@ -19,6 +19,8 @@ Our project is quite simple in theorry , it is called **"Lowest Unique Bid Wins"
 
 With a relatively high value of the intensity of the risk premium alpha(α) ,rushing directly toward zero is not a predomiant strategy:
 bid_cost(price) = base_cost + α/(price+1)
+
+If the players were to all bids 0 
 
 **Is the system a null sum system ?**
 
@@ -36,16 +38,13 @@ The informations necessary to determine the winner is too reach the lowest score
 • If updates arrive in a continuous stream, which solution is the most suitable?
 
 
-**What is the complexity of an insertion in:**
-– A sorted array?
-– A balanced binary search tree (BST)?
-– A dictionary + sorting at the end
 
-**In what cases can a BST become inefficient?**
 
-**How can we prevent degeneration?**
+**Avoid degeneration**
 
-**In your model, if all players play randomly, what happens?**
+A binary search tree can become inefficiant if it becomes degenerate. 
+In order to avoid degeneration, we need to use a perfect or full binary search tree 
+
 
 **If everyone plays 0?**
 
