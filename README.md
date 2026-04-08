@@ -20,7 +20,7 @@ Our project is quite simple in theory , it is called **"Lowest Unique Bid Wins"*
 With a relatively high value of the intensity of the risk premium alpha(α) ,rushing directly toward zero is not a predomiant strategy:
 bid_cost(price) = base_cost + α/(price+1)
 
-If the players were to all bids 0 
+If the players were all ties (for example 0)  : they all pay (base_cost + α), the players wins nothing
 
 **Is the system a null sum system ?**
 
