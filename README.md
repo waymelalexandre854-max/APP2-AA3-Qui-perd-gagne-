@@ -1,7 +1,19 @@
 # APP2-AA3-Qui-perd-gagne-
 
 
-Verify the comphrension of the problem / Set the structural challenges:
+
+**Our project** 
+
+We are currently launching our startup which wants to disrupt LowBid online auctions . 
+In order to do so, we want to make a platform that turns the sell of a premium item into a viral event. 
+Our project is quite simple in theorry , it is called **"Lowest Unique Bid Wins"**
+
+**Description of the programm**
+
+
+**Functionalities of the platform : Comprehension of the problem : Determine the rules set**
+
+
 
 **Why the the 0 price is not a dominant strategy with the risque bonus ?**
 
@@ -38,20 +50,4 @@ The informations necessary to determine the winner is too reach the lowest score
 **If everyone plays 0?**
 
 **Does a “stable” price exist toward which the system converges?**
-
-
-**A functional Python script that meets the above requirements:**
-
-**Technical constraints:**
-– Implement a Binary Search Tree (BST).
-– Handle multiple players for the same key.
-– Allow:
-i. Insertion, in-order traversal, finding the lowest unique value, conditional deletion, simulating multiple rounds.
-– Provide a reasoned analysis.
-– Prohibitions:
-i. No use of Python’s built-in sort to solve the main problem.
-• A concise report explaining:
-– The project structure.
-– Technical choices: data structures, algorithms used, etc.
-– Challenges faced and their resolutions.
 
