@@ -13,18 +13,17 @@ Our project is quite simple in theory , it is called **"Lowest Unique Bid Wins"*
 
 **Functionalities of the platform : Comprehension of the problem : Determine the rules set**
 
+We are goig to define different rules for our game to work properly.
 
-
-**Why the the 0 price is not a dominant strategy with the risque bonus ?**
+**Why the the 0 price is not a dominant strategy with the risque bonus**
 
 With a relatively high value of the intensity of the risk premium alpha(α) ,rushing directly toward zero is not a predomiant strategy:
 bid_cost(price) = base_cost + α/(price+1)
 
 If the players were all ties (for example 0)  : they all pay (base_cost + α), the players wins nothing
 
-**Is the system a null sum system ?**
 
-**What kind of informations are necessary to determine the winner?** 
+**The kind of informations necessary to determine the winner** 
 
 The informations necessary to determine the winner is too reach the lowest score/price
 
@@ -38,15 +37,11 @@ The informations necessary to determine the winner is too reach the lowest score
 • If updates arrive in a continuous stream, which solution is the most suitable?
 
 
-
-
 **Avoid degeneration**
 
 A binary search tree can become inefficiant if it becomes degenerate. 
 In order to avoid degeneration, we need to use a perfect or full binary search tree 
 
-
-**If everyone plays 0?**
 
 **Does a “stable” price exist toward which the system converges?**
 
