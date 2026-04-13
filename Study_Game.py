@@ -1,11 +1,11 @@
+"""this function will study a game given by a file that doesn't have any sleeve and return the winning player or none"""
 def study_game (data, tree):
-    possibility = []
-    x = 0
-    for i in data:
-        if i not in possibility:
-            possibility.append(i)
+    possibility = []        #list of every possibilities of number and after is used for storing the number of player on a bind
+    for i in data:      #we first verify the number of possibilities that we have to verify
+        if i[1] not in possibility:
+            possibility.append(i[1])
     x = len(possibility)
-    for i in range(x):
+    for i in range(x):      #this loop will first look at the lowest number possible then see if there is only one winner and show that winner, otherwise will continue. If no winner the programm give the result None
         possibility = []
         lowest_numb = lowest_search(tree)
         for i in data:
@@ -17,12 +17,16 @@ def study_game (data, tree):
             tree = remove_tree(tree, lowest_numb)
     return None
 
+
+"""a simple function that look for the lowest number in the tree"""
 def lowest_search(tree):
     if tree[1] == []:
         return tree[0]
     else:
         return lowest_search(tree[1])
 
+
+"""this first function will delete a value in the BST and us delete_max to modify all the tree in a way that doesn't destroy everything"""
 def remove_tree(tree, x):
     if tree == []:
         return []
