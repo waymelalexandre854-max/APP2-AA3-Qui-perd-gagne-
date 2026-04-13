@@ -58,13 +58,6 @@ In order to avoid degeneration, we need to use a perfect or full binary search t
 Help algorithmic compexity : O(log(n)) instead of O(n)
 
 
-**Is there structures that allows to maintain the ordonnated prices dynamically ?**
-
-**What difference is there between sorting at the end or maintain a permanent order ?**
-
-**If updates arrive in a continuous stream, which solution is the most suitable?**
-
-
 
 Lowbid is unique and revolutionnary project that will change the future of online aunction in a more fun and strategic aspect. It is no longer about just paying money: intelligent moves are rewarded and rushed moves are punished. 
 That is why we ask you to invest in our project !  
