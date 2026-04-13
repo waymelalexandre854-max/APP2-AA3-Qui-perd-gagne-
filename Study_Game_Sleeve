@@ -1,0 +1,69 @@
+def study_game_sleeve (data, tree):
+    dico_victory ={}
+    sleeve = []
+    possibility = []
+    winner = []
+    sleeve_win = False
+    x = 0
+    for i in data:
+        if i[0] not in sleeve and type(i[0]) == int:
+            sleeve.append(i[0])
+    for i in data:
+        if i[0] == 1 and i[1] not in possibility:
+            possibility.append(i[1])
+    x = len(possibility)
+    for i in sleeve:
+        for y in range(x):
+            possibility = []
+            lowest_numb = lowest_search(tree[i-1])
+            for i in data:
+                if i[2] == lowest_numb:
+                    possibility.append(i)
+            if len(possibility) == 1 and sleeve_win == False:
+                winner.append(possibility[0][1])
+                dico_victory[possibility[0][1]] = 0
+                sleeve_win = True
+            else:
+                tree = remove_tree(tree, lowest_numb)
+        sleeve_win = False
+    x = 0
+    for i in winner:
+        dico_victory[i] += 1
+    for key,value in dico_victory.items():
+        if x < value:
+            x = value
+    for key,value in dico_victory.items():
+        if value == x:
+            return key
+            
+        
+def lowest_search(tree):
+    if tree == []:
+        return tree
+    if tree[1] == []:
+        return tree[0]
+    else:
+        return lowest_search(tree[1])
+
+def remove_tree(tree, x):
+    if tree == []:
+        return []
+    if x < tree[0]:
+        tree[1] = remove_tree(tree[1], x)
+    elif x > tree[0]:
+        tree[2] = remove_tree(tree[2], x)
+    else: 
+        if tree[1] == []: 
+            return tree[2]
+        elif tree[2] == []: 
+            return tree[1]
+        else: 
+            val, tree[1] = delete_max(tree[1])
+            tree[0] = val
+    return tree
+
+def delete_max(tree):
+    if tree[2] == []:
+        return tree[0], tree[1]
+    val, tree[2] = delete_max(tree[2])
+    return val, tree
