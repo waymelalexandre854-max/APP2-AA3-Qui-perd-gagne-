@@ -1,0 +1,529 @@
+import sys
+import random
+from PyQt5.QtWidgets import (
+    QApplication, QWidget, QVBoxLayout, QPushButton,
+    QLabel, QFileDialog, QLineEdit, QTextEdit
+)
+
+
+def Load_data_Bid(file):
+    sleeve = False
+    data = []
+    try:
+        fichier = open(file, "r", encoding="utf-8", errors="ignore")
+        content = fichier.readlines()
+        fichier.close()
+    except Exception as e:
+        print(f"File error: {e}")
+        return [], []
+
+    for line in content:
+        line = line.strip()
+        if line == "":
+            continue
+        data.append(line)
+
+    if len(data) > 0 and data[0] == "manche,joueur,prix":
+        sleeve = True
+
+    if not sleeve:
+        data = create_list_tuple(data)
+        tree = create_BST_csv(data)
+        return data, tree
+    else:
+        data = create_list_sleeve_tuple(data)
+        tree = create_BST_sleeve(data)
+        return data, tree, True
+
+
+def create_list_tuple(data):
+    new_list = []
+    for idx, line in enumerate(data):
+        parts = line.split(',')
+        if len(parts) < 2: continue
+
+        name = parts[0]
+        price_str = parts[1]
+
+        if idx == 0 and not price_str.isdigit():
+            new_list.append((name, price_str))
+        else:
+            try:
+                new_list.append((name, int(price_str)))
+            except ValueError:
+                new_list.append((name, price_str))
+    return new_list
+
+
+def create_list_sleeve_tuple(data):
+    new_list = []
+    for idx, line in enumerate(data):
+        parts = line.split(',')
+        if len(parts) < 3: continue
+
+        m_str, name, p_str = parts[0], parts[1], parts[2]
+
+        if idx == 0 and not m_str.isdigit():
+            new_list.append((m_str, name, p_str))
+        else:
+            try:
+                new_list.append((int(m_str), name, int(p_str)))
+            except ValueError:
+                new_list.append((m_str, name, p_str))
+    return new_list
+
+
+def insert_csv(tree, x):
+    if not tree:
+        return [x, [], []]
+    if x < tree[0]:
+        tree[1] = insert_csv(tree[1], x)
+    elif x > tree[0]:
+        tree[2] = insert_csv(tree[2], x)
+    return tree
+
+
+def create_BST_csv(liste):
+    tree = []
+    for item in liste:
+        if isinstance(item[1], int):
+            tree = insert_csv(tree, item[1])
+    return tree
+
+
+def create_BST_sleeve(liste):
+    trees_dict = {}
+    for item in liste:
+        if isinstance(item[0], int):
+            sleeve_id = item[0]
+            price = item[2]
+            if sleeve_id not in trees_dict:
+                trees_dict[sleeve_id] = []
+            trees_dict[sleeve_id] = insert_csv(trees_dict[sleeve_id], price)
+    return trees_dict
+
+
+def lowest_search_csv(tree):
+    if not tree: return None
+    if not tree[1]:
+        return tree[0]
+    return lowest_search_csv(tree[1])
+
+
+def delete_max_csv(tree):
+    if not tree[2]:
+        return tree[0], tree[1]
+    val, tree[2] = delete_max_csv(tree[2])
+    return val, tree
+
+
+def remove_tree_csv(tree, x):
+    if not tree: return []
+    if x < tree[0]:
+        tree[1] = remove_tree_csv(tree[1], x)
+    elif x > tree[0]:
+        tree[2] = remove_tree_csv(tree[2], x)
+    else:
+        if not tree[1]: return tree[2]
+        if not tree[2]: return tree[1]
+        val, tree[1] = delete_max_csv(tree[1])
+        tree[0] = val
+    return tree
+
+
+def study_game_csv(data, tree):
+    while tree:
+        lowest_numb = lowest_search_csv(tree)
+        if lowest_numb is None: break
+
+        bidders = [row for row in data if isinstance(row[1], int) and row[1] == lowest_numb]
+
+        if len(bidders) == 1:
+            return bidders[0][0]
+        else:
+            tree = remove_tree_csv(tree, lowest_numb)
+    return None
+
+
+def study_game_sleeve(data, trees_dict):
+    dico_victory = {}
+
+    for sleeve_id in sorted(trees_dict.keys()):
+        current_tree = trees_dict[sleeve_id]
+        sleeve_winner = None
+
+        while current_tree:
+            lowest_numb = lowest_search_csv(current_tree)
+            if lowest_numb is None: break
+
+            bidders = [row for row in data if isinstance(row[0], int) and row[0] == sleeve_id and row[2] == lowest_numb]
+
+            if len(bidders) == 1:
+                sleeve_winner = bidders[0][1]
+                break
+            else:
+                current_tree = remove_tree_csv(current_tree, lowest_numb)
+
+        if sleeve_winner:
+            dico_victory[sleeve_winner] = dico_victory.get(sleeve_winner, 0) + 1
+
+    overall_winner = None
+    max_wins = 0
+    for player, wins in dico_victory.items():
+        if wins > max_wins:
+            max_wins = wins
+            overall_winner = player
+
+    return overall_winner
+
+
+class CSVWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Lowest Bid Game (CSV)")
+        self.setGeometry(200, 200, 400, 200)
+
+        layout = QVBoxLayout()
+
+        self.label = QLabel("Load a CSV file to find the winner")
+        layout.addWidget(self.label)
+
+        self.button = QPushButton("Load CSV File")
+        self.button.clicked.connect(self.load_file)
+        layout.addWidget(self.button)
+
+        self.result_label = QLabel("Winner: ")
+        layout.addWidget(self.result_label)
+
+        self.setLayout(layout)
+
+    def load_file(self):
+        file_path, _ = QFileDialog.getOpenFileName(self, "Open CSV File", "", "CSV Files (*.csv)")
+        if file_path:
+            try:
+                result = Load_data_Bid(file_path)
+
+                if len(result) == 2:
+                    data, tree = result
+                    winner = study_game_csv(data, tree)
+                else:
+                    data, tree, _ = result
+                    winner = study_game_sleeve(data, tree)
+
+                if winner:
+                    self.result_label.setText(f"Winner: {winner}")
+                else:
+                    self.result_label.setText("No unique winner")
+
+            except Exception as e:
+                self.result_label.setText(f"Error: {str(e)}")
+
+def insert_ai(tree, x):
+    if tree == []:
+        return [x, [], []]
+
+    if x <= tree[0]:
+        tree[1] = insert_ai(tree[1], x)
+    else:
+        tree[2] = insert_ai(tree[2], x)
+
+    return tree
+
+
+def build_bst_ai(values):
+    tree = []
+    for v in values:
+        tree = insert_ai(tree, v)
+    return tree
+
+
+def lowest_search_ai(tree):
+    if tree[1] == []:
+        return tree[0]
+    return lowest_search_ai(tree[1])
+
+
+def delete_max_ai(tree):
+    if tree[2] == []:
+        return tree[0], tree[1]
+
+    val, tree[2] = delete_max_ai(tree[2])
+    return val, tree
+
+
+def remove_tree_ai(tree, x):
+    if tree == []:
+        return []
+
+    if x < tree[0]:
+        tree[1] = remove_tree_ai(tree[1], x)
+
+    elif x > tree[0]:
+        tree[2] = remove_tree_ai(tree[2], x)
+
+    else:
+        if tree[1] == []:
+            return tree[2]
+        elif tree[2] == []:
+            return tree[1]
+        else:
+            val, tree[1] = delete_max_ai(tree[1])
+            tree[0] = val
+
+    return tree
+
+
+def study_game_ai(data, tree):
+    possibility = []
+
+    for i in data:
+        if i[1] not in possibility:
+            possibility.append(i[1])
+
+    x = len(possibility)
+
+    for _ in range(x):
+        possibility = []
+
+        lowest_numb = lowest_search_ai(tree)
+
+        for i in data:
+            if i[1] == lowest_numb:
+                possibility.append(i)
+
+        if len(possibility) == 1:
+            return possibility[0][0]
+        else:
+            tree = remove_tree_ai(tree, lowest_numb)
+
+    return None
+
+def Bozo(data):
+    data.append(("Bozo", random.randint(0, 250)))
+    return data
+
+def Cheater(data):
+    available = list(set(range(101)))
+    for i in data:
+        if i[1] in available:
+            available.remove(i[1])
+    if available:
+        data.append(("Cheater", random.choice(available)))
+    else:
+        data.append(("Cheater", random.randint(0, 250)))
+    return data
+
+def Joker(data):
+    seen = list(set([i[1] for i in data]))
+    if not seen:
+        data.append(("Joker", random.randint(0, 250)))
+    else:
+        data.append(("Joker", random.choice(seen)))
+    return data
+
+def Separate(data, value):
+    if random.randint(0, 1) == 0:
+        value -= random.randint(10, 20)
+    else:
+        value += random.randint(10, 20)
+    value = (value + 251) % 251
+    data.append(("Separate", value))
+    return value, data
+
+def Undicided(data):
+    values = [random.randint(0, 70) for _ in range(5)]
+    data.append(("Undicided", min(values)))
+    return data
+
+def Staline(data):
+    x = random.randint(0, 70)
+    data = [i for i in data if i[1] != x]
+    data.append(("Staline", x))
+    return data
+
+def Greed(data, cost=50, a=5):
+    while True:
+        x = random.randint(0, 70)
+        if cost + (a / (x + 1)) <= cost + (a / 25):
+            break
+    data.append(("Greed", x))
+    return data
+
+def Crescedo(data, value):
+    if value == 0:
+        value = random.randint(1, 10)
+    else:
+        value += random.randint(1, 5)
+    data.append(("Crescedo", value))
+    return value, data
+
+
+def AI_data_create(nb_round, ai_list, cost=50, a=5):
+    data = []
+    svalue = 25
+    crvalue = 0
+
+    for _ in range(nb_round):
+        for y in ai_list:
+            if y == "Bozo":
+                data = Bozo(data)
+            elif y == "Cheater":
+                data = Cheater(data)
+            elif y == "Joker":
+                data = Joker(data)
+            elif y == "Separate":
+                svalue, data = Separate(data, svalue)
+            elif y == "Undicided":
+                data = Undicided(data)
+            elif y == "Staline":
+                data = Staline(data)
+            elif y == "Greed":
+                data = Greed(data, cost, a)
+            elif y == "Crescedo":
+                crvalue, data = Crescedo(data, crvalue)
+
+    return data
+
+
+class Game(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("Lowest Unique Bid Game")
+
+        layout = QVBoxLayout()
+
+        self.label = QLabel("Enter your bid (0–250):")
+        layout.addWidget(self.label)
+
+        self.input = QLineEdit()
+        layout.addWidget(self.input)
+
+        self.risk_label = QLabel("Risk factor (a):")
+        layout.addWidget(self.risk_label)
+
+        self.risk_input = QLineEdit()
+        self.risk_input.setText("5")
+        layout.addWidget(self.risk_input)
+
+        self.risk_button = QPushButton("Update Risk Factor")
+        self.risk_button.clicked.connect(self.update_risk)
+        layout.addWidget(self.risk_button)
+
+        self.btn = QPushButton("Play AI Round")
+        self.btn.clicked.connect(self.play_round)
+        layout.addWidget(self.btn)
+
+        self.log = QTextEdit()
+        self.log.setReadOnly(True)
+        layout.addWidget(self.log)
+
+        self.setLayout(layout)
+
+        self.ai_list = [
+            "Bozo", "Cheater", "Joker", "Separate",
+            "Undicided", "Staline", "Greed", "Crescedo"
+        ]
+
+        self.round = 1
+        self.a = 5
+
+    def update_risk(self):
+        self.a = float(self.risk_input.text())
+        self.log.append(f"Risk factor updated to: {self.a}")
+
+    def play_round(self):
+        try:
+            player_bid = int(self.input.text())
+
+            self.log.append(f"\n--- Round {self.round} ---")
+
+            if player_bid == 0:
+                self.log.append("Player bid: 0 (ELIMINATED THIS ROUND)")
+                player_eliminated = True
+            else:
+                self.log.append(f"Player bid: {player_bid}")
+                player_eliminated = False
+
+            ai_bids = {}
+            for ai in self.ai_list:
+                data = AI_data_create(1, [ai], a=self.a)
+                ai_bids[ai] = data[0][1]
+
+            self.log.append(f"AI bids: {ai_bids}")
+
+            all_bids = list(ai_bids.values())
+            if not player_eliminated:
+                all_bids.append(player_bid)
+
+            bst = build_bst_ai(all_bids)
+
+            full_data = []
+            if not player_eliminated:
+                full_data.append(("PLAYER", player_bid))
+
+            for name, bid in ai_bids.items():
+                full_data.append((name, bid))
+
+            winner = study_game_ai(full_data, bst)
+
+            winner_bid = None
+
+            if winner == "PLAYER":
+                winner_bid = player_bid
+            elif winner is not None:
+                winner_bid = ai_bids[winner]
+
+            if player_eliminated:
+                if winner == "PLAYER":
+                    winner = None
+                winner_bid = None
+
+            if winner is None:
+                self.log.append("No unique bid this round!")
+            else:
+                cost = 50
+                risk = cost + (self.a / (player_bid + 1)) if player_bid != 0 else cost
+
+                self.log.append(f"Winning unique bid: {winner_bid}")
+                self.log.append(f"Winner: {winner}")
+                self.log.append(f"Risk cost: {risk:.2f}")
+
+            self.round += 1
+            self.input.clear()
+
+        except Exception as e:
+            self.log.append("ERROR:")
+            self.log.append(str(e))
+
+class Menu(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Choose Game Mode")
+
+        layout = QVBoxLayout()
+
+        btn1 = QPushButton("CSV Mode")
+        btn1.clicked.connect(self.open_csv)
+        layout.addWidget(btn1)
+
+        btn2 = QPushButton("Player vs AI")
+        btn2.clicked.connect(self.open_ai)
+        layout.addWidget(btn2)
+
+        self.setLayout(layout)
+
+    def open_csv(self):
+        self.csv = CSVWindow()
+        self.csv.show()
+
+    def open_ai(self):
+        self.ai = Game()
+        self.ai.show()
+
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = Menu()
+    window.show()
+    sys.exit(app.exec_())
