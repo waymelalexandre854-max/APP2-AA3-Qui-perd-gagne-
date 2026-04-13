@@ -1,20 +1,13 @@
-def Load_data_Bid(file):
-    tree = []
-    remaining = 0
+def load_data_bid(file):
     data = []
-    new_object = ""
-    fichier = open(file, "r", encoding="utf-8", errors="ignore")
-    content = fichier.readlines()
-    fichier.close()
-    for i in content:
-        remaining = len(i) - 1
-        for y in range(remaining):
-            new_object += i[y]
-        data.append(new_object)
-        new_object = ""
-    data = create_list_tuple(data)
-    tree = create_BTS(data)
-    return data, tree
+    with open(file, "r", encoding="utf-8", errors="ignore") as fichier:
+        lignes = fichier.readlines()
+        for ligne in lignes[1:]: 
+            ligne = ligne.strip()
+            if ligne:
+                joueur, prix_str = ligne.split(',')
+                data.append((joueur, int(prix_str)))
+    return data
     
 def create_list_tuple (list):
     first = True
@@ -44,22 +37,22 @@ def create_list_tuple (list):
             
     return new_list
 
-def create_BTS (liste):
+def create_BTS(liste):
     tree = []
-    x = 0
-    for i in liste:
-        if type(i[1]) == int:
-            x = i[1]
-            tree = insert(tree, x)
+    for joueur, prix in liste:
+        tree = insert(tree, prix, joueur)
     return tree
 
-def insert (tree, x):
-    if tree == []:
-        tree.append(x)
-        tree.append([])
-        tree.append([])
-        return tree
-    if x < tree[0]:
+def insert(tree, prix, joueur):
+    if not tree:
+        return [prix, [joueur], [], []]
+    if prix == tree[0]:
+        tree[1].append(joueur)
+    elif prix < tree[0]:
+        tree[2] = insert(tree[2], prix, joueur)
+    elif prix > tree[0]:
+        tree[3] = insert(tree[3], prix, joueur)
+    return tree
         tree[1] = insert(tree[1], x)
     if x > tree[0]:
         tree[2] = insert(tree[2], x)
