@@ -68,3 +68,5 @@ Help algorithmic compexity : O(log(n)) instead of O(n)
 
 Lowbid is unique and revolutionnary project that will change the future of online aunction in a more fun and strategic aspect. It is no longer about just paying money: intelligent moves are rewarded and rushed moves are punished. 
 That is why we ask you to invest in our project !  
+
+**download requierment :** the programm need the python library random and sys to work propely
