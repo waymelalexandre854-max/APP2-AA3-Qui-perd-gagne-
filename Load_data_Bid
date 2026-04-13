@@ -5,8 +5,8 @@ def load_data_bid(file):
         for ligne in lignes[1:]: 
             ligne = ligne.strip()
             if ligne:
-                joueur, prix_str = ligne.split(',')
-                data.append((joueur, int(prix_str)))
+                player, prix_str = ligne.split(',')
+                data.append((player, int(prix_str)))
     return data
     
 def create_list_tuple (list):
@@ -37,23 +37,42 @@ def create_list_tuple (list):
             
     return new_list
 
-def create_BTS(liste):
+def create_BST(liste):
     tree = []
-    for joueur, prix in liste:
-        tree = insert(tree, prix, joueur)
+    for player, prix in liste:
+        tree = insert(tree, prix, player)
     return tree
 
-def insert(tree, prix, joueur):
+def insert(tree, prix, player):
     if not tree:
-        return [prix, [joueur], [], []]
+        return [prix, [player], [], []]
     if prix == tree[0]:
-        tree[1].append(joueur)
+        tree[1].append(player)
     elif prix < tree[0]:
-        tree[2] = insert(tree[2], prix, joueur)
+        tree[2] = insert(tree[2], prix, player)
     elif prix > tree[0]:
-        tree[3] = insert(tree[3], prix, joueur)
+        tree[3] = insert(tree[3], prix, player)
     return tree
         tree[1] = insert(tree[1], x)
     if x > tree[0]:
         tree[2] = insert(tree[2], x)
     return tree
+
+def get_sorted_nodes(tree):
+    if not tree:
+        return []
+    left_part = get_sorted_nodes(tree[2])
+    current_node = [(tree[0], tree[1])]  
+    right_part = get_sorted_nodes(tree[3])
+    return left_part + current_node + right_part
+
+def calculate_costs(sorted_list, base_cost, alpha):
+    total_revenue = 0
+    player_costs = []  
+    for price, players in sorted_list:
+        one_bid_cost = base_cost + (alpha / (price + 1))
+        for player in players:
+            player_costs.append((player, one_bid_cost))
+            total_revenue += one_bid_cost
+            
+    return player_costs, total_revenue
